@@ -8,7 +8,7 @@ import time
 import logging
 import math
 import pandas as pd
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, jsonify, render_template, session
 from dotenv import load_dotenv
 from google import genai
 from google.genai import types
@@ -41,6 +41,8 @@ logger = logging.getLogger("data-insight-builder")
 
 # Flask 앱 초기화
 app = Flask(__name__)
+app.secret_key = os.getenv("SECRET_KEY", "data-insight-builder-secret-0909-secure-key")
+APP_PASSWORD = os.getenv("APP_PASSWORD", "0909")
 
 # 업로드 파일 최대 크기 설정 (기본값 10MB)
 max_upload_mb = int(os.getenv("MAX_UPLOAD_MB", "10"))
@@ -285,6 +287,19 @@ def diagnose_dataframe(df: pd.DataFrame, initial_warnings: list):
 @app.route("/", methods=["GET"])
 def index():
     return render_template("index.html")
+
+
+@app.route("/api/verify_password", methods=["POST"])
+def verify_password():
+    req = request.get_json(silent=True) or {}
+    password = str(req.get("password", "")).strip()
+    if password == APP_PASSWORD:
+        session["authenticated"] = True
+        logger.info("[AUTH] 비밀번호 인증 성공 (0909)")
+        return jsonify({"success": True, "message": "인증에 성공했습니다."}), 200
+    logger.warning("[AUTH] 비밀번호 인증 실패: 잘못된 비밀번호 시도")
+    return jsonify({"success": False, "error": "비밀번호가 올바르지 않습니다."}), 401
+
 
 
 @app.route("/health", methods=["GET"])

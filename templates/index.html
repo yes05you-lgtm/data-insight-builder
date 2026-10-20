@@ -16,6 +16,40 @@
   <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
+  <!-- Security Password Gate Overlay (무조건 접속 시 비밀번호 0909 입력 필수) -->
+  <div id="authGateOverlay" class="auth-gate-overlay">
+    <div class="auth-card" id="authCard">
+      <div class="auth-icon-circle">
+        <span class="auth-icon">🔒</span>
+      </div>
+      <h2 class="auth-title">보안 접근 인증</h2>
+      <p class="auth-desc"><strong>AI Data Insight Builder</strong> 서비스에 접속하려면<br>보안 비밀번호를 입력해주세요.</p>
+      
+      <form id="authForm" class="auth-form" onsubmit="return false;">
+        <div class="auth-input-group">
+          <input 
+            type="password" 
+            id="authPasswordInput" 
+            class="auth-input" 
+            placeholder="비밀번호 4자리 입력" 
+            maxlength="20"
+            autocomplete="off"
+            autofocus
+            required
+          />
+          <button type="button" id="btnTogglePassword" class="auth-toggle-btn" aria-label="비밀번호 보기">👁️</button>
+        </div>
+        <div id="authErrorMessage" class="auth-error-message hidden" style="display: none;"></div>
+        <button type="submit" id="btnSubmitAuth" class="btn btn-primary auth-submit-btn">
+          🔓 확인 및 접속하기
+        </button>
+      </form>
+      <div class="auth-footer-note">
+        🛡️ 인가된 사용자만 접근할 수 있는 데이터 분석 플랫폼입니다.
+      </div>
+    </div>
+  </div>
+
   <div class="app-container">
     <!-- Header -->
     <header class="app-header">

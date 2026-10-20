@@ -67,6 +67,100 @@ document.addEventListener("DOMContentLoaded", () => {
   const btnCopyReport = document.getElementById("btnCopyReport");
 
   // ============================================================================
+  // Security Password Gate (무조건 접속 시 비밀번호 입력 필수: 0909)
+  // ============================================================================
+  const authGateOverlay = document.getElementById("authGateOverlay");
+  const authCard = document.getElementById("authCard");
+  const authPasswordInput = document.getElementById("authPasswordInput");
+  const btnTogglePassword = document.getElementById("btnTogglePassword");
+  const authErrorMessage = document.getElementById("authErrorMessage");
+  const authForm = document.getElementById("authForm");
+
+  const APP_PASSWORD = "0909";
+
+  // 접속 시도 시 항상 비밀번호 입력창에 포커스 (기존 입력 초기화)
+  if (authPasswordInput) {
+    authPasswordInput.value = "";
+    setTimeout(() => {
+      authPasswordInput.focus();
+    }, 150);
+  }
+
+  // 비밀번호 보이기 / 숨기기 토글
+  if (btnTogglePassword && authPasswordInput) {
+    btnTogglePassword.addEventListener("click", () => {
+      const isPass = authPasswordInput.type === "password";
+      authPasswordInput.type = isPass ? "text" : "password";
+      btnTogglePassword.textContent = isPass ? "🙈" : "👁️";
+    });
+  }
+
+  // 비밀번호 제출 및 검증 처리
+  async function handleAuthSubmit() {
+    const entered = (authPasswordInput.value || "").trim();
+
+    if (!entered) {
+      showAuthError("비밀번호를 입력해주세요.");
+      return;
+    }
+
+    if (entered === APP_PASSWORD) {
+      // 인증 성공: 자물쇠 해제 및 메인 화면 표시
+      unlockApp();
+
+      // 서버 세션도 안전하게 인증 동기화
+      try {
+        await fetch("/api/verify_password", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ password: entered })
+        });
+      } catch (e) {
+        console.warn("[Auth] 서버 세션 동기화 예외:", e);
+      }
+    } else {
+      showAuthError("비밀번호가 올바르지 않습니다. 다시 확인해주세요.");
+    }
+  }
+
+  function showAuthError(msg) {
+    if (authErrorMessage) {
+      authErrorMessage.textContent = msg;
+      authErrorMessage.classList.remove("hidden");
+      authErrorMessage.style.display = "block";
+    }
+    if (authCard) {
+      authCard.classList.remove("shake");
+      void authCard.offsetWidth; // DOM 리플로우를 통한 애니메이션 재트리거
+      authCard.classList.add("shake");
+    }
+    if (authPasswordInput) {
+      authPasswordInput.value = "";
+      authPasswordInput.focus();
+    }
+  }
+
+  function unlockApp() {
+    if (authErrorMessage) {
+      authErrorMessage.classList.add("hidden");
+      authErrorMessage.style.display = "none";
+    }
+    if (authGateOverlay) {
+      authGateOverlay.classList.add("unlocked");
+      setTimeout(() => {
+        authGateOverlay.style.display = "none";
+      }, 350);
+    }
+  }
+
+  if (authForm) {
+    authForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      handleAuthSubmit();
+    });
+  }
+
+  // ============================================================================
   // 유틸리티 함수: 에러 표시 및 콘솔 로그
   // ============================================================================
   function showError(msg) {
