@@ -161,6 +161,54 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ============================================================================
+  // PWA (Progressive Web App) Service Worker 등록 및 설치 프롬프트 제어
+  // ============================================================================
+  const btnInstallPwa = document.getElementById("btnInstallPwa");
+  let deferredInstallPrompt = null;
+
+  // 서비스 워커 등록
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("/sw.js")
+        .then((reg) => {
+          console.log("[PWA] Service Worker 등록 성공, 범위:", reg.scope);
+        })
+        .catch((err) => {
+          console.warn("[PWA] Service Worker 등록 실패:", err);
+        });
+    });
+  }
+
+  // PWA 설치 가능 시 설치 버튼 노출
+  window.addEventListener("beforeinstallprompt", (e) => {
+    e.preventDefault();
+    deferredInstallPrompt = e;
+    if (btnInstallPwa) {
+      btnInstallPwa.classList.remove("hidden");
+      btnInstallPwa.style.display = "inline-flex";
+    }
+    console.log("[PWA] 앱 설치 준비 완료 (beforeinstallprompt)");
+  });
+
+  if (btnInstallPwa) {
+    btnInstallPwa.addEventListener("click", async () => {
+      if (!deferredInstallPrompt) return;
+      deferredInstallPrompt.prompt();
+      const choiceResult = await deferredInstallPrompt.userChoice;
+      console.log("[PWA] 사용자 설치 선택:", choiceResult.outcome);
+      if (choiceResult.outcome === "accepted") {
+        btnInstallPwa.style.display = "none";
+      }
+      deferredInstallPrompt = null;
+    });
+  }
+
+  window.addEventListener("appinstalled", () => {
+    console.log("[PWA] AI Data Insight Builder가 성공적으로 설치되었습니다.");
+    if (btnInstallPwa) btnInstallPwa.style.display = "none";
+  });
+
+  // ============================================================================
   // 유틸리티 함수: 에러 표시 및 콘솔 로그
   // ============================================================================
   function showError(msg) {

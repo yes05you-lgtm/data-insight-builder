@@ -289,6 +289,16 @@ def index():
     return render_template("index.html")
 
 
+@app.route("/sw.js", methods=["GET"])
+def service_worker():
+    return app.send_static_file("sw.js"), 200, {"Content-Type": "application/javascript"}
+
+
+@app.route("/manifest.json", methods=["GET"])
+def manifest():
+    return app.send_static_file("manifest.json"), 200, {"Content-Type": "application/manifest+json"}
+
+
 @app.route("/api/verify_password", methods=["POST"])
 def verify_password():
     req = request.get_json(silent=True) or {}

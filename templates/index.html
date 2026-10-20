@@ -4,6 +4,17 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AI Data Insight Builder</title>
+  
+  <!-- PWA Metadata & Manifest -->
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#2563eb">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="DataInsight">
+  <meta name="description" content="공식기관 CSV 데이터를 진단하고 판다스 통계 검증과 Gemini AI 지능형 해석을 제공하는 교육용 분석 PWA 웹앱">
+  <link rel="icon" type="image/png" href="/static/icons/favicon.png">
+  <link rel="apple-touch-icon" href="/static/icons/icon-192.png">
+  
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -58,6 +69,9 @@
         <p class="subtitle">공식기관 CSV 데이터를 진단하고, 엄격한 판다스 통계 검증과 Gemini AI의 지능형 해석을 제공하는 교육용 분석 웹앱</p>
       </div>
       <div class="header-right">
+        <button id="btnInstallPwa" class="btn-install-pwa hidden" type="button" style="display: none;" title="홈 화면 또는 데스크톱에 앱 설치">
+          📱 앱 설치하기
+        </button>
         <div id="serverBadge" class="status-badge checking">서버 상태 확인 중...</div>
         <div id="apiKeyBadge" class="status-badge checking">API 키 확인 중...</div>
       </div>
